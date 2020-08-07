@@ -1,17 +1,41 @@
-# elasticsearch.js 16.7.1
+# elasticsearch.js 16.7.1 -- Modified Version 
 
 ---
 
-#### We have released the [new JavaScript client](https://www.elastic.co/blog/new-elasticsearch-javascript-client-released)!
-*In the next months this client will be deprecated, so you should start migrating your codebase as soon as possible.<br/>
-We have built a [migration guide](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/breaking-changes.html) that will help you move to the new client quickly, and if you have questions or need help, please [open an issue](https://github.com/elastic/elasticsearch-js/issues/new/choose).*
+#### Connect External Kibana with Amazon Elasticsearch
+Makes [elasticsearch-js](https://github.com/elastic/elasticsearch-js) compatible with Kibana. It uses the aws-sdk to make signed requests to an Amazon ES endpoint.
 
----
+## Installation
+```bash
+npm install --save aws-sdk 
+```
+Download the modified version
+Change the orginial Elasticsearch dependency inside package.json to the directory of modified Elasticsearch.
+    "elasticsearch": "Your-path-to/modified-elasticsearch-js",
 
-The official low-level Elasticsearch client for Node.js and the browser.
+Inside the Kibana folder: 
+Run yarn kbn bootstrap
+Run yarn kbn start --oss 
 
-[![Coverage Status](http://img.shields.io/coveralls/elastic/elasticsearch-js/master.svg?style=flat-square)](https://coveralls.io/r/elastic/elasticsearch-js?branch=master)
-[![Dependencies up to date](http://img.shields.io/david/elastic/elasticsearch-js.svg?style=flat-square)](https://david-dm.org/elastic/elasticsearch-js)
+## Usage
+
+Make sure the AWS credentials/regions/endpoints are in the enviorment variable. 
+
+Or we can change the configuration inside the src/lib/client.js file 
+
+
+
+```javascript
+AWS.config.update({
+      credentials: new AWS.EnvironmentCredentials('AWS'), //or build your credentials here
+      region: process.env.ELASTICSEARCH_REGION || 'us-west-2' //or type your region here
+      });
+
+    if (!config.hosts && !config.host) {
+      config.host = process.env.ELASTICSEARCH_DOMAIN || 'localhost:9200'; //or type your endpoint here
+    }
+```
+
 
 ## Features
 
