@@ -1,30 +1,51 @@
-# elasticsearch.js 16.7.1 -- Modified Version 
+# AWS/Kibana Compatible Elasticsearch.js Modified Version 7.4
 
 ---
 
-#### Connect External Kibana with Amazon Elasticsearch
-Makes [elasticsearch-js](https://github.com/elastic/elasticsearch-js) compatible with Kibana. It uses the aws-sdk to make signed requests to an Amazon ES endpoint.
+#### Install this Elasticsearch js client to connect locally configured external Kibana(7.4) with Amazon Elasticsearch Endpoint(7.4)
+
+Modify the [elasticsearch-js](https://github.com/elastic/elasticsearch-js) to make it compatible with Kibana. It uses the [aws-sdk](https://aws.amazon.com/sdk-for-node-js/) to make signed requests to Amazon ES endpoints.
+
+This is the solution for accessing your cluster from local [Kibana](https://github.com/elastic/kibana/tree/7.4) of version 7.4 and earlier 
 
 ## Installation
-```bash
-npm install --save aws-sdk 
-```
-Download the modified version
-Change the orginial Elasticsearch dependency inside package.json to the directory of modified Elasticsearch.
-    "elasticsearch": "Your-path-to/modified-elasticsearch-js",
 
-Inside the Kibana folder: 
-Run yarn kbn bootstrap
-Run yarn kbn start --oss 
+Download the [modified version](https://github.com/kaiming1996/elasticsearch-js-legacy)
+```bash
+git clone https://github.com/kaiming1996/elasticsearch-js-legacy.git 
+```
+Set AWS credentials inside the environment
+ ```bash                     
+export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXX
+export ELASTICSEARCH_REGION=XXXXXXXXXXXXXXXXXXX
+export ELASTICSEARCH_DOMAIN=XXXXXXXXXXXXXXXXXXX
+```
+
+Inside your own Kibana package.json, change the orginial Elasticsearch dependency from "elasticsearch": "^16.4.0", to "elasticsearch": "path_to_modified_es_js_client"
+
+![dependency](https://github.com/kaiming1996/elasticsearch-js-legacy/blob/kaiming1996-kibana-es-handler/screenshot/dependency.png)
 
 ## Usage
 
-Make sure the AWS credentials/regions/endpoints are in the enviorment variable. 
+Original install method (e.g. download page, yum, from source, etc.): Kibana from GitHub
 
-Or we can change the configuration inside the src/lib/client.js file 
+Steps to reproduce:
+
+1. Download the [modified version](https://github.com/kaiming1996/elasticsearch-js-legacy)
+2. Set AWS credentials
+3. Change the orginial Elasticsearch dependency inside package.json inside the Kibana from Github
+4. Reinstall the dependency in the Kibana directory
+ ```bash                     
+ yarn kbn bootstrap
+ ``` 
+5. Run the Kibana in the Kibana directory with "--oss"
+ ```bash                     
+ yarn start --oss
+ ``` 
 
 
-
+If the environment variables are not working, we can directly change the configuration inside the [client.js](https://github.com/kaiming1996/elasticsearch-js-legacy/blob/kaiming1996-kibana-es-handler/src/lib/client.js) file 
 ```javascript
 AWS.config.update({
       credentials: new AWS.EnvironmentCredentials('AWS'), //or build your credentials here
@@ -36,118 +57,20 @@ AWS.config.update({
     }
 ```
 
+You should be able to view your visualized data at http://localhost:5603
+![result](https://github.com/kaiming1996/elasticsearch-js-legacy/blob/kaiming1996-kibana-es-handler/screenshot/result.png)
+
 
 ## Features
-
+ It has all the original features from the elasticsearch js client, including: 
+ 
  - One-to-one mapping with REST API and the other official clients
  - Generalized, pluggable architecture. See [Extending Core Components](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/extending_core_components.html)
  - Configurable, automatic discovery of cluster nodes
  - Persistent, Keep-Alive connections
  - Load balancing (with pluggable selection strategy) across all available nodes.
 
-## Use in Node.js
 
-```
-npm install elasticsearch
-```
+## Credits
 
-[![NPM Stats](https://nodei.co/npm/elasticsearch.png?downloads=true)](https://npmjs.org/package/elasticsearch)
-
-## Use in the Browser
-
-Check out the [Browser Builds](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/browser-builds.html) doc page for help downloading and setting up the client for use in the browser.
-
-## Docs
- - [Quick Start](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/quick-start.html)
- - [Browser Builds](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/browser-builds.html)
- - [API](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/api-reference.html)
- - [Configuration](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/configuration.html)
- - [Development/Contributing](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/contributing.html)
- - [Extending Core Components](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/extending_core_components.html)
- - [Logging](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/logging.html)
-
-
-## Questions?
-You can probably find help in [#kibana](https://kiwiirc.com/client/irc.freenode.net/?#kibana) on freenode.
-
-
-## Supported Elasticsearch Versions
-
-Elasticsearch.js provides support for, and is regularly tested against, Elasticsearch releases 0.90.12 and greater. We also test against the latest changes in several branches in the Elasticsearch repository. To tell the client which version of Elasticsearch you are using, and therefore the API it should provide, set the `apiVersion` config param. [More info](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/configuration.html#config-options)
-
-## Examples
-
-Create a client instance
-```js
-var elasticsearch = require('elasticsearch');
-var client = new elasticsearch.Client({
-  host: 'localhost:9200',
-  log: 'trace',
-  apiVersion: '7.2', // use the same version of your Elasticsearch instance
-});
-```
-
-Send a HEAD request to `/` and allow up to 1 second for it to complete.
-```js
-client.ping({
-  // ping usually has a 3000ms timeout
-  requestTimeout: 1000
-}, function (error) {
-  if (error) {
-    console.trace('elasticsearch cluster is down!');
-  } else {
-    console.log('All is well');
-  }
-});
-```
-
-Skip the callback to get a promise back
-```js
-try {
-  const response = await client.search({
-    q: 'pants'
-  });
-  console.log(response.hits.hits)
-} catch (error) {
-  console.trace(error.message)
-}
-```
-
-Find tweets that have "elasticsearch" in their body field
-```js
-const response = await client.search({
-  index: 'twitter',
-  type: 'tweets',
-  body: {
-    query: {
-      match: {
-        body: 'elasticsearch'
-      }
-    }
-  }
-})
-
-for (const tweet of response.hits.hits) {
-  console.log('tweet:', tweet);
-}
-```
-
-More examples and detailed information about each method are available [here](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/16.x/index.html)
-
-## License
-
-This software is licensed under the Apache 2 license, quoted below.
-
-    Copyright (c) 2014 Elasticsearch <http://www.elasticsearch.org>
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+Adopted from this [gist](https://github.com/TheDeveloper/http-aws-es/blob/master/connector.js). Thanks [@TheDeveloper](https://github.com/TheDeveloper)
