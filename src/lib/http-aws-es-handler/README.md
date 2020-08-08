@@ -22,11 +22,11 @@ Or we can change the configuration inside the src/lib/client.js file
 ```javascript
 AWS.config.update({
       credentials: new AWS.EnvironmentCredentials('AWS'), //or build your credentials here
-      region: process.env.ELASTICSEARCH_REGION || 'us-west-2' //or type your region here
+      region: process.env.AMAZON_ELASTICSEARCH_REGION || 'us-west-2' //or type your region here
       });
 
     if (!config.hosts && !config.host) {
-      config.host = process.env.ELASTICSEARCH_DOMAIN || 'localhost:9200'; //or type your endpoint here
+      config.host = process.env.AMAZON_ELASTICSEARCH_DOMAIN || 'localhost:9200'; //or type your endpoint here
     }
 ```
 
