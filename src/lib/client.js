@@ -51,11 +51,11 @@ function Client(config) {
     let AWS = require('aws-sdk');
     AWS.config.update({
       credentials: new AWS.EnvironmentCredentials('AWS'),
-      region: process.env.ELASTICSEARCH_REGION || 'us-west-2'
+      region: process.env.AMAZON_ELASTICSEARCH_REGION || 'us-west-2'
       });
 
     if (!config.hosts && !config.host) {
-      config.host = process.env.ELASTICSEARCH_DOMAIN || 'localhost:9200';
+      config.host = process.env.AMAZON_ELASTICSEARCH_DOMAIN || 'localhost:9200';
     }
     config.connectionClass = require('./http-aws-es-handler/connector')
     this.close = function() {
