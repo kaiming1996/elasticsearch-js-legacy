@@ -18,8 +18,8 @@ Set AWS credentials inside the environment
  ```bash                     
 export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXXXXX
 export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXX
-export ELASTICSEARCH_REGION=XXXXXXXXXXXXXXXXXXX
-export ELASTICSEARCH_DOMAIN=XXXXXXXXXXXXXXXXXXX
+export AMAZON_ELASTICSEARCH_REGION=XXXXXXXXXXXXXXXXXXX
+export AMAZON_ELASTICSEARCH_DOMAIN=XXXXXXXXXXXXXXXXXXX
 ```
 
 Inside your own Kibana package.json, change the orginial Elasticsearch dependency from "elasticsearch": "^16.4.0", to "elasticsearch": "path_to_modified_es_js_client"
@@ -49,11 +49,11 @@ If the environment variables are not working, we can directly change the configu
 ```javascript
 AWS.config.update({
       credentials: new AWS.EnvironmentCredentials('AWS'), //or build your credentials here
-      region: process.env.ELASTICSEARCH_REGION || 'us-west-2' //or type your region here
+      region: process.env.AMAZON_ELASTICSEARCH_REGION || 'us-west-2' //or type your region here
       });
 
     if (!config.hosts && !config.host) {
-      config.host = process.env.ELASTICSEARCH_DOMAIN || 'localhost:9200'; //or type your endpoint here
+      config.host = process.env.AMAZON_ELASTICSEARCH_DOMAIN || 'localhost:9200'; //or type your endpoint here
     }
 ```
 
